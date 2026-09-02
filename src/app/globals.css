@@ -2,20 +2,31 @@
 
 :root {
   /* Selo Vinho — vidro de perfume + selo de cera, sem gradiente */
-  --paper: #fbebe1;
-  --paper-raised: #f7d9c4;
-  --ink: #16110f;
-  --ink-soft: #5c4f47;
-  --line: #e6c9b3;
-  --plum: #6e1423;
-  --plum-dark: #4a0e18;
+  --paper: #faf5ee;
+  --paper-raised: #ffffff;
+  --ink: #18120d;
+  --ink-soft: #6e5f53;
+  --line: #e7dccc;
+  --plum: #7a1728;
+  --plum-dark: #3d0b14;
   --gold: #b08a3e;
+  /* Superfície escura usada no hero e em blocos de destaque */
+  --night: #18120d;
+}
+
+* {
+  scroll-behavior: smooth;
 }
 
 body {
   background: var(--paper);
   color: var(--ink);
   font-family: var(--font-public-sans), -apple-system, "Segoe UI", sans-serif;
+}
+
+::selection {
+  background: var(--gold);
+  color: var(--night);
 }
 
 .font-display {
