@@ -1,14 +1,15 @@
 @import "tailwindcss";
 
 :root {
-  --paper: #faf5ee;
-  --paper-raised: #f2e9db;
-  --ink: #2b2320;
-  --ink-soft: #5a4d44;
-  --line: #e2d3bc;
-  --plum: #6b2f45;
-  --plum-dark: #4f2233;
-  --gold: #a9812f;
+  /* Selo Vinho — vidro de perfume + selo de cera, sem gradiente */
+  --paper: #fbebe1;
+  --paper-raised: #f7d9c4;
+  --ink: #16110f;
+  --ink-soft: #5c4f47;
+  --line: #e6c9b3;
+  --plum: #6e1423;
+  --plum-dark: #4a0e18;
+  --gold: #b08a3e;
 }
 
 body {
@@ -18,5 +19,6 @@ body {
 }
 
 .font-display {
-  font-family: var(--font-fraunces), Georgia, serif;
+  font-family: var(--font-bodoni), Georgia, serif;
+  font-weight: 800;
 }

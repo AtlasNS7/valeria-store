@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
-import { Fraunces, Public_Sans } from "next/font/google";
+import { Bodoni_Moda, Public_Sans } from "next/font/google";
 import "./globals.css";
 import { CartProvider } from "@/context/CartContext";
 import { Header } from "@/components/Header";
 
-const fraunces = Fraunces({
-  variable: "--font-fraunces",
+const bodoniModa = Bodoni_Moda({
+  variable: "--font-bodoni",
   subsets: ["latin"],
-  style: ["italic"],
-  weight: ["600"],
+  style: ["italic", "normal"],
+  weight: ["600", "800"],
 });
 
 const publicSans = Public_Sans({
@@ -26,7 +26,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="pt-BR"
-      className={`${fraunces.variable} ${publicSans.variable} h-full antialiased`}
+      className={`${bodoniModa.variable} ${publicSans.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
         <CartProvider>
