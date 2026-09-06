@@ -55,6 +55,14 @@ export async function POST(request: Request) {
         );
       }
       const qty = Math.max(1, Math.floor(cartItem.qty));
+      if (qty > product.stock) {
+        return NextResponse.json(
+          {
+            error: `Só temos ${product.stock} unidade(s) de "${product.name}" em estoque.`,
+          },
+          { status: 409 },
+        );
+      }
       orderItems.push({
         product_id: product.id,
         name: product.name,
@@ -62,6 +70,25 @@ export async function POST(request: Request) {
         qty,
       });
       totalCents += product.price_cents * qty;
+    }
+
+    // Confere e baixa o estoque em uma única transação no banco (função
+    // decrement_stock em supabase/schema.sql). Isso fecha a corrida em que
+    // dois clientes compram o último frasco ao mesmo tempo: quem chegar
+    // primeiro reserva o estoque, o segundo recebe o erro abaixo.
+    const stockPayload = orderItems.map((i) => ({
+      product_id: i.product_id,
+      qty: i.qty,
+    }));
+    const { error: stockError } = await supabase.rpc("decrement_stock", {
+      items: stockPayload,
+    });
+
+    if (stockError) {
+      const message = stockError.message?.startsWith("Estoque insuficiente")
+        ? stockError.message
+        : "Um dos produtos ficou sem estoque suficiente. Atualiza o carrinho e tenta de novo.";
+      return NextResponse.json({ error: message }, { status: 409 });
     }
 
     const { data: order, error: orderError } = await supabase
@@ -78,6 +105,9 @@ export async function POST(request: Request) {
       .single();
 
     if (orderError || !order) {
+      // O estoque já tinha sido reservado para este pedido — como ele não
+      // foi criado, devolve as unidades pro catálogo.
+      await supabase.rpc("restore_stock", { items: stockPayload });
       return NextResponse.json(
         { error: "Não consegui criar o pedido. Tenta de novo." },
         { status: 500 },
@@ -101,6 +131,9 @@ export async function POST(request: Request) {
     } catch (payErr) {
       // Pedido já existe no banco (status "pending") mesmo se o link falhar,
       // então nada se perde — dá pra tentar de novo ou atender manualmente.
+      // O estoque continua reservado de propósito (o pedido pode ainda ser
+      // pago); se ele nunca for pago, o webhook restaura o estoque quando a
+      // InfinitePay avisar que o pagamento falhou/expirou.
       console.error("Erro ao criar link InfinitePay:", payErr);
       return NextResponse.json(
         {

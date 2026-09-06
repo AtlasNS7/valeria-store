@@ -76,3 +76,57 @@ create policy "admin autenticado pode subir imagens"
 create policy "admin autenticado pode apagar imagens"
   on storage.objects for delete
   using (bucket_id = 'product-images' and auth.role() = 'authenticated');
+
+-- 5) Estoque: baixa e reposição atômicas
+-- Evita que dois pedidos simultâneos vendam a última unidade do mesmo
+-- produto (checkout confere e decrementa estoque em uma única transação,
+-- então uma corrida entre dois pedidos nunca deixa o estoque negativo).
+create or replace function decrement_stock(items jsonb)
+returns void
+language plpgsql
+as $$
+declare
+  item jsonb;
+  updated_rows int;
+  product_name text;
+begin
+  for item in select * from jsonb_array_elements(items)
+  loop
+    update products
+      set stock = stock - (item->>'qty')::int,
+          updated_at = now()
+      where id = (item->>'product_id')::uuid
+        and active = true
+        and stock >= (item->>'qty')::int;
+
+    get diagnostics updated_rows = row_count;
+
+    if updated_rows = 0 then
+      select name into product_name from products where id = (item->>'product_id')::uuid;
+      raise exception 'Estoque insuficiente para "%"', coalesce(product_name, item->>'product_id');
+    end if;
+  end loop;
+end;
+$$;
+
+-- Repõe estoque quando um pedido não segue adiante (falha ao criar o
+-- registro do pedido, ou pagamento cancelado/recusado depois de reservado).
+create or replace function restore_stock(items jsonb)
+returns void
+language plpgsql
+as $$
+declare
+  item jsonb;
+begin
+  for item in select * from jsonb_array_elements(items)
+  loop
+    update products
+      set stock = stock + (item->>'qty')::int,
+          updated_at = now()
+      where id = (item->>'product_id')::uuid;
+  end loop;
+end;
+$$;
+
+grant execute on function decrement_stock(jsonb) to service_role;
+grant execute on function restore_stock(jsonb) to service_role;
