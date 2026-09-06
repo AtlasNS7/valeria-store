@@ -1,3 +1,5 @@
+import { whatsappLink } from "@/lib/site";
+
 export function Footer() {
   return (
     <footer className="mt-20 border-t border-[var(--line)] bg-[var(--paper-raised)]">
@@ -10,14 +12,24 @@ export function Footer() {
             Presentes e perfumaria artesanal, feitos à mão.
           </p>
         </div>
-        <a
-          href="https://www.instagram.com/valeria.perfumariastm/"
-          target="_blank"
-          rel="noreferrer"
-          className="text-sm font-semibold text-[var(--ink)] border border-[var(--line)] rounded-full px-5 py-2 hover:border-[var(--plum)] hover:text-[var(--plum)] transition-colors"
-        >
-          @valeria.perfumariastm
-        </a>
+        <div className="flex flex-wrap items-center justify-center gap-3">
+          <a
+            href={whatsappLink()}
+            target="_blank"
+            rel="noreferrer"
+            className="text-sm font-semibold text-[var(--ink)] border border-[var(--line)] rounded-full px-5 py-2 hover:border-[var(--plum)] hover:text-[var(--plum)] transition-colors"
+          >
+            WhatsApp
+          </a>
+          <a
+            href="https://www.instagram.com/valeria.perfumariastm/"
+            target="_blank"
+            rel="noreferrer"
+            className="text-sm font-semibold text-[var(--ink)] border border-[var(--line)] rounded-full px-5 py-2 hover:border-[var(--plum)] hover:text-[var(--plum)] transition-colors"
+          >
+            @valeria.perfumariastm
+          </a>
+        </div>
       </div>
     </footer>
   );
