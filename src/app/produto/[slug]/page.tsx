@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { formatBRL, type Product } from "@/lib/types";
 import { AddToCartButton } from "./AddToCartButton";
+import { whatsappLink } from "@/lib/site";
 
 export default async function ProductPage(props: PageProps<"/produto/[slug]">) {
   const { slug } = await props.params;
@@ -39,12 +40,41 @@ export default async function ProductPage(props: PageProps<"/produto/[slug]">) {
         <p className="text-[var(--ink-soft)] whitespace-pre-line mb-6">
           {p.description}
         </p>
+
+        {p.occasions?.length > 0 && (
+          <div className="flex flex-wrap gap-2 mb-6">
+            {p.occasions.map((o) => (
+              <span
+                key={o}
+                className="text-xs font-semibold rounded-full border border-[var(--line)] text-[var(--ink-soft)] px-3 py-1"
+              >
+                {o}
+              </span>
+            ))}
+          </div>
+        )}
+
         <AddToCartButton product={p} />
         {p.stock <= 0 && (
           <p className="text-sm text-red-700 mt-3">
             Produto sem estoque no momento — fale com a gente pelo WhatsApp.
           </p>
         )}
+
+        <ul className="text-sm text-[var(--ink-soft)] flex flex-col gap-1.5 mt-6 pt-6 border-t border-[var(--line)]">
+          <li>🎀 Já vem embalado para presente</li>
+          <li>
+            ✒️ Quer personalizar (mensagem, combinação, ocasião)?{" "}
+            <a
+              href={whatsappLink(`Olá! Quero personalizar o presente "${p.name}"`)}
+              target="_blank"
+              rel="noreferrer"
+              className="font-semibold text-[var(--plum)] hover:underline"
+            >
+              Fala com a gente no WhatsApp
+            </a>
+          </li>
+        </ul>
       </div>
     </div>
   );

@@ -130,3 +130,28 @@ $$;
 
 grant execute on function decrement_stock(jsonb) to service_role;
 grant execute on function restore_stock(jsonb) to service_role;
+
+-- 6) Ocasiões/público — tags livres pra filtrar produtos na loja
+-- (ex: "Para ela", "Aniversário", "Namorados"). Lista fixa em src/lib/types.ts.
+alter table products add column if not exists occasions text[] not null default '{}';
+
+-- 7) Depoimentos — a Valéria cadastra pelo painel /admin/depoimentos;
+-- só os marcados como ativos aparecem na loja.
+create table if not exists testimonials (
+  id uuid primary key default gen_random_uuid(),
+  author_name text not null,
+  quote text not null,
+  active boolean default true,
+  created_at timestamptz default now()
+);
+
+alter table testimonials enable row level security;
+
+create policy "depoimentos ativos são públicos"
+  on testimonials for select
+  using (active = true);
+
+create policy "admin gerencia depoimentos"
+  on testimonials for all
+  using (auth.role() = 'authenticated')
+  with check (auth.role() = 'authenticated');

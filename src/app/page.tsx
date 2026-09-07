@@ -1,6 +1,8 @@
 import { createClient } from "@/lib/supabase/server";
-import { ProductCard } from "@/components/ProductCard";
-import type { Product } from "@/lib/types";
+import { ProductFilters } from "@/components/ProductFilters";
+import { PersonalizationSection } from "@/components/PersonalizationSection";
+import { TestimonialsSection } from "@/components/TestimonialsSection";
+import type { Product, Testimonial } from "@/lib/types";
 
 const FEATURES = [
   {
@@ -19,13 +21,22 @@ const FEATURES = [
 
 export default async function HomePage() {
   const supabase = await createClient();
-  const { data: products } = await supabase
-    .from("products")
-    .select("*")
-    .eq("active", true)
-    .order("created_at", { ascending: false });
+  const [{ data: products }, { data: testimonials }] = await Promise.all([
+    supabase
+      .from("products")
+      .select("*")
+      .eq("active", true)
+      .order("created_at", { ascending: false }),
+    supabase
+      .from("testimonials")
+      .select("*")
+      .eq("active", true)
+      .order("created_at", { ascending: false })
+      .limit(6),
+  ]);
 
   const items = (products ?? []) as Product[];
+  const testimonialItems = (testimonials ?? []) as Testimonial[];
 
   return (
     <>
@@ -88,13 +99,12 @@ export default async function HomePage() {
             produtos no painel administrativo, eles aparecem aqui.
           </p>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 sm:gap-6">
-            {items.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
+          <ProductFilters items={items} />
         )}
       </section>
+
+      <PersonalizationSection />
+      <TestimonialsSection items={testimonialItems} />
     </>
   );
 }

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import type { Product } from "@/lib/types";
+import { OCCASION_OPTIONS, type Product } from "@/lib/types";
 
 function slugify(text: string) {
   return text
@@ -24,6 +24,7 @@ export function ProductForm({ product }: { product?: Product }) {
     product ? (product.price_cents / 100).toFixed(2) : "",
   );
   const [category, setCategory] = useState(product?.category ?? "perfumes");
+  const [occasions, setOccasions] = useState<string[]>(product?.occasions ?? []);
   const [stock, setStock] = useState(String(product?.stock ?? 1));
   const [imageUrl, setImageUrl] = useState(product?.image_url ?? "");
   const [uploading, setUploading] = useState(false);
@@ -72,6 +73,7 @@ export function ProductForm({ product }: { product?: Product }) {
       description: description.trim(),
       price_cents: priceCents,
       category: category.trim() || "geral",
+      occasions,
       stock: Math.max(0, parseInt(stock, 10) || 0),
       image_url: imageUrl || null,
       updated_at: new Date().toISOString(),
@@ -151,6 +153,39 @@ export function ProductForm({ product }: { product?: Product }) {
           <option value="kits">Kits</option>
           <option value="geral">Geral</option>
         </select>
+      </div>
+
+      <div className="flex flex-col gap-2">
+        <span className="text-sm font-semibold">
+          Pra quem / ocasião <span className="font-normal text-[var(--ink-soft)]">(marca quantas quiser)</span>
+        </span>
+        <div className="flex flex-wrap gap-2">
+          {OCCASION_OPTIONS.map((opt) => {
+            const checked = occasions.includes(opt);
+            return (
+              <label
+                key={opt}
+                className={`text-sm rounded-full px-3 py-1.5 border cursor-pointer transition-colors ${
+                  checked
+                    ? "bg-[var(--plum)] border-[var(--plum)] text-white"
+                    : "border-[var(--line)] text-[var(--ink)]"
+                }`}
+              >
+                <input
+                  type="checkbox"
+                  className="sr-only"
+                  checked={checked}
+                  onChange={() =>
+                    setOccasions((prev) =>
+                      checked ? prev.filter((o) => o !== opt) : [...prev, opt],
+                    )
+                  }
+                />
+                {opt}
+              </label>
+            );
+          })}
+        </div>
       </div>
 
       <div className="flex flex-col gap-2">

@@ -5,11 +5,30 @@ export type Product = {
   description: string;
   price_cents: number;
   category: string;
+  occasions: string[];
   image_url: string | null;
   stock: number;
   active: boolean;
   created_at: string;
   updated_at: string;
+};
+
+// Lista fixa de ocasiões/públicos pra marcar produtos e filtrar na loja.
+export const OCCASION_OPTIONS = [
+  "Para ela",
+  "Para ele",
+  "Aniversário",
+  "Namorados",
+  "Dia das Mães",
+  "Amigo secreto",
+] as const;
+
+export type Testimonial = {
+  id: string;
+  author_name: string;
+  quote: string;
+  active: boolean;
+  created_at: string;
 };
 
 export type CartItem = {
