@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { ProductFilters } from "@/components/ProductFilters";
 import { GirlfriendGiftBanner } from "@/components/GirlfriendGiftBanner";
+import { HeroCarousel } from "@/components/HeroCarousel";
 import { LastMinuteGiftBanner } from "@/components/LastMinuteGiftBanner";
 import { PersonalizationSection } from "@/components/PersonalizationSection";
 import { RealGiftsShowcase } from "@/components/RealGiftsShowcase";
@@ -44,14 +45,7 @@ export default async function HomePage() {
   return (
     <>
       <section className="relative overflow-hidden bg-[var(--night)] text-[var(--ink)]">
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 opacity-[0.35]"
-          style={{
-            background:
-              "radial-gradient(circle at 18% 20%, var(--gold), transparent 45%), radial-gradient(circle at 82% 75%, var(--plum-dark), transparent 40%)",
-          }}
-        />
+        <HeroCarousel />
         <div className="relative max-w-6xl mx-auto px-5 sm:px-8 pt-20 pb-24 sm:pt-28 sm:pb-32">
           <p className="text-xs uppercase tracking-[0.3em] font-semibold text-[var(--gold)] mb-5">
             Perfumaria &amp; presentes artesanais
