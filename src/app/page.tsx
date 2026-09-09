@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { ProductFilters } from "@/components/ProductFilters";
 import { GirlfriendGiftBanner } from "@/components/GirlfriendGiftBanner";
 import { PersonalizationSection } from "@/components/PersonalizationSection";
+import { RealGiftsShowcase } from "@/components/RealGiftsShowcase";
 import { TestimonialsSection } from "@/components/TestimonialsSection";
 import type { Product, Testimonial } from "@/lib/types";
 
@@ -105,6 +106,8 @@ export default async function HomePage() {
           <ProductFilters items={items} />
         )}
       </section>
+
+      <RealGiftsShowcase />
 
       <PersonalizationSection />
       <TestimonialsSection items={testimonialItems} />
