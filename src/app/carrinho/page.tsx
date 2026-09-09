@@ -145,7 +145,7 @@ export default function CartPage() {
         <button
           type="submit"
           disabled={loading}
-          className="bg-[var(--plum)] text-white font-semibold rounded-full px-6 py-3 hover:bg-[var(--plum-dark)] transition-colors disabled:opacity-50"
+          className="bg-[var(--plum)] text-[var(--night)] font-semibold rounded-full px-6 py-3 hover:bg-[var(--plum-dark)] transition-colors disabled:opacity-50"
         >
           {loading ? "Preparando pagamento..." : "Ir para o pagamento (Pix / cartão)"}
         </button>

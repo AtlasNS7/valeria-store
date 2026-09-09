@@ -60,7 +60,7 @@ export default function AdminLoginPage() {
         <button
           type="submit"
           disabled={loading}
-          className="bg-[var(--plum)] text-white font-semibold rounded-full px-6 py-2.5 disabled:opacity-50"
+          className="bg-[var(--plum)] text-[var(--night)] font-semibold rounded-full px-6 py-2.5 disabled:opacity-50"
         >
           {loading ? "Entrando..." : "Entrar"}
         </button>

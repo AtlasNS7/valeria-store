@@ -43,7 +43,7 @@ export function PersonalizationSection() {
           href={whatsappLink("Olá! Quero personalizar um presente 🎁")}
           target="_blank"
           rel="noreferrer"
-          className="inline-flex items-center gap-2 bg-[var(--plum)] text-white font-semibold rounded-full px-6 py-3 hover:bg-[var(--plum-dark)] transition-colors"
+          className="inline-flex items-center gap-2 bg-[var(--plum)] text-[var(--night)] font-semibold rounded-full px-6 py-3 hover:bg-[var(--plum-dark)] transition-colors"
         >
           Quero personalizar pelo WhatsApp
           <span aria-hidden>→</span>

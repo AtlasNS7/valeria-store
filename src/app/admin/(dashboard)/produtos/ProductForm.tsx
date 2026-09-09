@@ -167,7 +167,7 @@ export function ProductForm({ product }: { product?: Product }) {
                 key={opt}
                 className={`text-sm rounded-full px-3 py-1.5 border cursor-pointer transition-colors ${
                   checked
-                    ? "bg-[var(--plum)] border-[var(--plum)] text-white"
+                    ? "bg-[var(--plum)] border-[var(--plum)] text-[var(--night)]"
                     : "border-[var(--line)] text-[var(--ink)]"
                 }`}
               >
@@ -203,7 +203,7 @@ export function ProductForm({ product }: { product?: Product }) {
       <button
         type="submit"
         disabled={saving || uploading}
-        className="bg-[var(--plum)] text-white font-semibold rounded-full px-6 py-2.5 disabled:opacity-50"
+        className="bg-[var(--plum)] text-[var(--night)] font-semibold rounded-full px-6 py-2.5 disabled:opacity-50"
       >
         {saving ? "Salvando..." : isEditing ? "Salvar alterações" : "Cadastrar produto"}
       </button>

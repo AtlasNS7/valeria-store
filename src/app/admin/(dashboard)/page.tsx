@@ -19,7 +19,7 @@ export default async function AdminProductsPage() {
         <h1 className="font-display italic text-2xl">Produtos</h1>
         <Link
           href="/admin/produtos/novo"
-          className="bg-[var(--plum)] text-white font-semibold rounded-full px-5 py-2 text-sm"
+          className="bg-[var(--plum)] text-[var(--night)] font-semibold rounded-full px-5 py-2 text-sm"
         >
           + Novo produto
         </Link>

@@ -12,7 +12,7 @@ export default function OrderErrorPage() {
       </p>
       <Link
         href="/"
-        className="inline-block bg-[var(--plum)] text-white font-semibold rounded-full px-6 py-2.5"
+        className="inline-block bg-[var(--plum)] text-[var(--night)] font-semibold rounded-full px-6 py-2.5"
       >
         Voltar para a loja
       </Link>
