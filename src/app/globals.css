@@ -2,16 +2,19 @@
 
 :root {
   /* Selo Vinho — vidro de perfume + selo de cera, sem gradiente */
-  --paper: #faf5ee;
-  --paper-raised: #ffffff;
-  --ink: #18120d;
-  --ink-soft: #6e5f53;
-  --line: #e7dccc;
-  --plum: #7a1728;
-  --plum-dark: #3d0b14;
-  --gold: #b08a3e;
+  --paper: rgb(14 14 14);
+  --paper-raised: rgb(20 20 20);
+  --ink: rgb(255 255 255);
+  --ink-soft: rgb(172 175 185);
+  --line: rgb(44 44 44);
+  --plum: rgb(255 137 117);
+  --plum-dark: rgb(255 106 82);
+  --gold: rgb(255 137 117);
   /* Superfície escura usada no hero e em blocos de destaque */
-  --night: #18120d;
+  --night: rgb(14 14 14);
+  --radius: 0.75rem;
+  --shadow-card: 0 4px 24px rgb(0 0 0 / 0.4);
+  --shadow-glow: 0 0 60px rgb(255 137 117 / 0.3);
 }
 
 * {
@@ -31,5 +34,14 @@ body {
 
 .font-display {
   font-family: var(--font-bodoni), Georgia, serif;
-  font-weight: 800;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  font-style: normal;
+}
+
+.font-display.italic {
+  font-family: var(--font-bodoni), Georgia, serif;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  font-style: normal;
 }
