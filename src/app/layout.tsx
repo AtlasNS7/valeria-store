@@ -1,22 +1,21 @@
 import type { Metadata } from "next";
-import { Bodoni_Moda, Public_Sans } from "next/font/google";
+import { Inter_Tight } from "next/font/google";
 import "./globals.css";
 import { CartProvider } from "@/context/CartContext";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { WhatsAppButton } from "@/components/WhatsAppButton";
 
-const bodoniModa = Bodoni_Moda({
+const interTightDisplay = Inter_Tight({
   variable: "--font-bodoni",
   subsets: ["latin"],
-  style: ["italic", "normal"],
-  weight: ["600", "800"],
+  weight: ["300", "400", "500", "600", "700", "800"],
 });
 
-const publicSans = Public_Sans({
+const publicSans = Inter_Tight({
   variable: "--font-public-sans",
   subsets: ["latin"],
-  weight: ["400", "600", "700"],
+  weight: ["400", "500", "600", "700"],
 });
 
 export const metadata: Metadata = {
@@ -28,7 +27,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="pt-BR"
-      className={`${bodoniModa.variable} ${publicSans.variable} h-full antialiased`}
+      className={`${interTightDisplay.variable} ${publicSans.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
         <CartProvider>
