@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { ProductFilters } from "@/components/ProductFilters";
 import { GirlfriendGiftBanner } from "@/components/GirlfriendGiftBanner";
+import { LastMinuteGiftBanner } from "@/components/LastMinuteGiftBanner";
 import { PersonalizationSection } from "@/components/PersonalizationSection";
 import { RealGiftsShowcase } from "@/components/RealGiftsShowcase";
 import { TestimonialsSection } from "@/components/TestimonialsSection";
@@ -84,6 +85,7 @@ export default async function HomePage() {
       </section>
 
       <GirlfriendGiftBanner />
+      <LastMinuteGiftBanner />
 
       <section id="colecao" className="max-w-6xl mx-auto px-5 sm:px-8 py-14 sm:py-20">
         <div className="flex items-end justify-between mb-8 gap-4">
