@@ -1,21 +1,22 @@
 import type { Metadata } from "next";
-import { Inter_Tight } from "next/font/google";
+import { Spectral, Familjen_Grotesk } from "next/font/google";
 import "./globals.css";
 import { CartProvider } from "@/context/CartContext";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { WhatsAppButton } from "@/components/WhatsAppButton";
 
-const interTightDisplay = Inter_Tight({
+const spectral = Spectral({
   variable: "--font-bodoni",
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700", "800"],
+  style: ["italic", "normal"],
+  weight: ["400", "500"],
 });
 
-const publicSans = Inter_Tight({
+const familjenGrotesk = Familjen_Grotesk({
   variable: "--font-public-sans",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  weight: ["400", "500", "600"],
 });
 
 export const metadata: Metadata = {
@@ -27,7 +28,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="pt-BR"
-      className={`${interTightDisplay.variable} ${publicSans.variable} h-full antialiased`}
+      className={`${spectral.variable} ${familjenGrotesk.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
         <CartProvider>

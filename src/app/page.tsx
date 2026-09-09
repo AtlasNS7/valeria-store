@@ -41,13 +41,13 @@ export default async function HomePage() {
 
   return (
     <>
-      <section className="relative overflow-hidden bg-[var(--night)] text-[var(--paper)]">
+      <section className="relative overflow-hidden bg-[var(--night)] text-[var(--ink)]">
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-0 opacity-[0.08]"
+          className="pointer-events-none absolute inset-0 opacity-[0.35]"
           style={{
             background:
-              "radial-gradient(circle at 18% 20%, var(--gold), transparent 45%), radial-gradient(circle at 82% 75%, var(--gold), transparent 40%)",
+              "radial-gradient(circle at 18% 20%, var(--gold), transparent 45%), radial-gradient(circle at 82% 75%, var(--plum-dark), transparent 40%)",
           }}
         />
         <div className="relative max-w-6xl mx-auto px-5 sm:px-8 pt-20 pb-24 sm:pt-28 sm:pb-32">
@@ -57,13 +57,13 @@ export default async function HomePage() {
           <h1 className="font-display italic text-4xl sm:text-6xl leading-[1.05] max-w-2xl mb-6 text-balance">
             Cada frasco carrega uma história feita à mão.
           </h1>
-          <p className="text-base sm:text-lg text-[var(--paper)]/70 max-w-md mb-9">
+          <p className="text-base sm:text-lg text-[var(--ink-soft)] max-w-md mb-9">
             Valéria cria perfumes e presentes autorais, um a um, para quem
             gosta de dar — e receber — algo com significado.
           </p>
           <a
             href="#colecao"
-            className="inline-flex items-center gap-2 bg-[var(--gold)] text-[var(--night)] font-semibold rounded-full px-7 py-3 hover:bg-[var(--paper)] transition-colors"
+            className="inline-flex items-center gap-2 border border-[var(--gold)] text-[var(--gold)] font-semibold rounded-full px-7 py-3 hover:bg-[var(--gold)] hover:text-[var(--night)] transition-colors"
           >
             Ver a coleção
             <span aria-hidden>→</span>

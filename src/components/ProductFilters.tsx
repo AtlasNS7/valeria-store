@@ -45,7 +45,7 @@ export function ProductFilters({ items }: { items: Product[] }) {
                   onClick={() => setCategory(category === c ? null : c)}
                   className={`text-sm rounded-full px-4 py-1.5 border transition-colors ${
                     category === c
-                      ? "bg-[var(--plum)] border-[var(--plum)] text-white"
+                      ? "bg-[var(--plum)] border-[var(--plum)] text-[var(--night)]"
                       : "border-[var(--line)] text-[var(--ink)] hover:border-[var(--plum)]"
                   }`}
                 >

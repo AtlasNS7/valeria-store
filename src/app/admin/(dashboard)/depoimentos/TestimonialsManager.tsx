@@ -90,7 +90,7 @@ export function TestimonialsManager({ initial }: { initial: Testimonial[] }) {
         <button
           type="submit"
           disabled={saving}
-          className="self-start bg-[var(--plum)] text-white font-semibold rounded-full px-6 py-2.5 disabled:opacity-50"
+          className="self-start bg-[var(--plum)] text-[var(--night)] font-semibold rounded-full px-6 py-2.5 disabled:opacity-50"
         >
           {saving ? "Salvando..." : "+ Adicionar depoimento"}
         </button>
