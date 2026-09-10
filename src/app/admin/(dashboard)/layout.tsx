@@ -8,6 +8,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <div className="flex gap-5 text-sm font-semibold">
           <Link href="/admin" className="hover:text-[var(--plum)]">Produtos</Link>
           <Link href="/admin/pedidos" className="hover:text-[var(--plum)]">Pedidos</Link>
+          <Link href="/admin/leads" className="hover:text-[var(--plum)]">Leads</Link>
           <Link href="/admin/depoimentos" className="hover:text-[var(--plum)]">Depoimentos</Link>
           <Link href="/" className="hover:text-[var(--plum)]">Ver loja</Link>
         </div>

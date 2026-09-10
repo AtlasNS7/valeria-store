@@ -81,8 +81,27 @@ export type Order = {
   status: "pending" | "paid" | "canceled";
   infinitepay_link: string | null;
   infinitepay_order_nsu: string | null;
+  coupon_code: string | null;
+  discount_cents: number;
   created_at: string;
   updated_at: string;
+};
+
+// Lead capturado pelo popup da home, com o cupom de desconto de uso único
+// gerado pra ele. Ver supabase/schema.sql — tabela sem policy de leitura
+// pra anon, então toda leitura/escrita além do INSERT inicial passa pela
+// service_role key (rotas server-side).
+export type Lead = {
+  id: string;
+  name: string;
+  whatsapp: string;
+  email: string | null;
+  coupon_code: string;
+  discount_percent: number;
+  used: boolean;
+  used_at: string | null;
+  expires_at: string;
+  created_at: string;
 };
 
 export function formatBRL(cents: number): string {
