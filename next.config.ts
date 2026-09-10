@@ -11,6 +11,13 @@ const nextConfig: NextConfig = {
         hostname: "**.supabase.co",
         pathname: "/storage/v1/object/public/**",
       },
+      {
+        protocol: "https",
+        // Bucket S3 público de terceiro usado pelas fotos dos produtos
+        // de revenda importados em lote.
+        hostname: "s3.us-east-1.amazonaws.com",
+        pathname: "/revendi/products/**",
+      },
     ],
   },
 };

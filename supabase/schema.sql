@@ -155,3 +155,8 @@ create policy "admin gerencia depoimentos"
   on testimonials for all
   using (auth.role() = 'authenticated')
   with check (auth.role() = 'authenticated');
+
+-- 8) Linha do produto — distingue kits personalizados (feitos pela Valéria)
+-- dos produtos de revenda importados em lote. Usado pra priorizar os kits
+-- personalizados na ordenação das listagens da loja.
+alter table products add column if not exists product_line text not null default 'revenda';

@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { GiftQuiz } from "@/components/GiftQuiz";
-import type { Product } from "@/lib/types";
+import { sortByProductLine, type Product } from "@/lib/types";
 
 export const metadata = {
   title: "Presente pra namorada | Valéria Gift & Essence",
@@ -16,7 +16,7 @@ export default async function GiftForGirlfriendPage() {
     .eq("active", true)
     .order("created_at", { ascending: false });
 
-  const items = (products ?? []) as Product[];
+  const items = sortByProductLine((products ?? []) as Product[]);
 
   return (
     <div className="max-w-4xl mx-auto px-5 sm:px-8 py-14 sm:py-20">

@@ -6,7 +6,7 @@ import { LastMinuteGiftBanner } from "@/components/LastMinuteGiftBanner";
 import { PersonalizationSection } from "@/components/PersonalizationSection";
 import { RealGiftsShowcase } from "@/components/RealGiftsShowcase";
 import { TestimonialsSection } from "@/components/TestimonialsSection";
-import type { Product, Testimonial } from "@/lib/types";
+import { sortByProductLine, type Product, type Testimonial } from "@/lib/types";
 
 const FEATURES = [
   {
@@ -39,7 +39,7 @@ export default async function HomePage() {
       .limit(6),
   ]);
 
-  const items = (products ?? []) as Product[];
+  const items = sortByProductLine((products ?? []) as Product[]);
   const testimonialItems = (testimonials ?? []) as Testimonial[];
 
   return (

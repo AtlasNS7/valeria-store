@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { createClient } from "@/lib/supabase/server";
-import { formatBRL, type Product } from "@/lib/types";
+import { formatBRL, sortByProductLine, type Product } from "@/lib/types";
 import { ToggleActiveButton } from "./ToggleActiveButton";
 
 export default async function AdminProductsPage() {
@@ -11,7 +11,7 @@ export default async function AdminProductsPage() {
     .select("*")
     .order("created_at", { ascending: false });
 
-  const items = (products ?? []) as Product[];
+  const items = sortByProductLine((products ?? []) as Product[]);
 
   return (
     <div>
