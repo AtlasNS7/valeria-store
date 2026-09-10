@@ -13,6 +13,49 @@ export default function CartPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const [couponInput, setCouponInput] = useState("");
+  const [coupon, setCoupon] = useState<{ code: string; discountPercent: number } | null>(
+    null,
+  );
+  const [couponLoading, setCouponLoading] = useState(false);
+  const [couponError, setCouponError] = useState<string | null>(null);
+
+  const discountCents = coupon ? Math.round((totalCents * coupon.discountPercent) / 100) : 0;
+  const finalTotalCents = totalCents - discountCents;
+
+  async function handleApplyCoupon(e: React.FormEvent) {
+    e.preventDefault();
+    setCouponError(null);
+    const code = couponInput.trim().toUpperCase();
+    if (!code) {
+      setCouponError("Digita o código do cupom.");
+      return;
+    }
+
+    setCouponLoading(true);
+    try {
+      const res = await fetch("/api/coupons/validate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error ?? "Cupom inválido.");
+      setCoupon({ code, discountPercent: data.discount_percent });
+    } catch (err) {
+      setCoupon(null);
+      setCouponError(err instanceof Error ? err.message : "Cupom inválido.");
+    } finally {
+      setCouponLoading(false);
+    }
+  }
+
+  function removeCoupon() {
+    setCoupon(null);
+    setCouponInput("");
+    setCouponError(null);
+  }
+
   async function handleCheckout(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
@@ -32,6 +75,7 @@ export default function CartPage() {
           customer_phone: phone,
           customer_address: address,
           items,
+          coupon_code: coupon?.code,
         }),
       });
 
@@ -98,11 +142,60 @@ export default function CartPage() {
         ))}
       </div>
 
-      <div className="flex justify-between items-center border-t border-[var(--line)] pt-4 mb-8">
-        <span className="font-semibold">Total</span>
-        <span className="font-display italic text-xl text-[var(--plum-dark)]">
-          {formatBRL(totalCents)}
-        </span>
+      <div className="border-t border-[var(--line)] pt-4 mb-8">
+        <form onSubmit={handleApplyCoupon} className="flex flex-col gap-2 mb-4">
+          {coupon ? (
+            <div className="flex items-center justify-between gap-3">
+              <p className="text-sm text-[var(--ink)]">
+                Cupom <span className="font-semibold">{coupon.code}</span> aplicado
+                (-{coupon.discountPercent}%)
+              </p>
+              <button
+                type="button"
+                onClick={removeCoupon}
+                className="text-sm text-[var(--ink-soft)] hover:text-[var(--plum)]"
+              >
+                remover
+              </button>
+            </div>
+          ) : (
+            <div className="flex gap-2">
+              <input
+                value={couponInput}
+                onChange={(e) => setCouponInput(e.target.value)}
+                placeholder="Código do cupom"
+                className="flex-1 border border-[var(--line)] rounded-lg px-3 py-2 bg-[var(--paper)]"
+              />
+              <button
+                type="submit"
+                disabled={couponLoading}
+                className="text-sm font-semibold text-[var(--ink)] border border-[var(--line)] rounded-lg px-4 py-2 hover:border-[var(--plum)] hover:text-[var(--plum)] transition-colors disabled:opacity-50 whitespace-nowrap"
+              >
+                {couponLoading ? "Aplicando..." : "Aplicar"}
+              </button>
+            </div>
+          )}
+          {couponError && <p className="text-sm text-red-700">{couponError}</p>}
+        </form>
+
+        {coupon && (
+          <div className="flex justify-between items-center text-sm text-[var(--ink-soft)] mb-1">
+            <span>Subtotal</span>
+            <span>{formatBRL(totalCents)}</span>
+          </div>
+        )}
+        {coupon && (
+          <div className="flex justify-between items-center text-sm text-[var(--ink-soft)] mb-1">
+            <span>Desconto</span>
+            <span>-{formatBRL(discountCents)}</span>
+          </div>
+        )}
+        <div className="flex justify-between items-center">
+          <span className="font-semibold">Total</span>
+          <span className="font-display italic text-xl text-[var(--plum-dark)]">
+            {formatBRL(finalTotalCents)}
+          </span>
+        </div>
       </div>
 
       <form onSubmit={handleCheckout} className="flex flex-col gap-4">

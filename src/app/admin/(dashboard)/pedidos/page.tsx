@@ -40,6 +40,11 @@ export default async function AdminOrdersPage() {
               <p className="text-sm font-semibold">
                 Total: {formatBRL(order.total_cents)}
               </p>
+              {order.coupon_code && (
+                <p className="text-xs text-[var(--ink-soft)]">
+                  Cupom {order.coupon_code} (-{formatBRL(order.discount_cents)})
+                </p>
+              )}
               <p className="text-xs text-[var(--ink-soft)] mt-1">
                 {new Date(order.created_at).toLocaleString("pt-BR")}
               </p>

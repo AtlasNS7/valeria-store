@@ -160,3 +160,38 @@ create policy "admin gerencia depoimentos"
 -- dos produtos de revenda importados em lote. Usado pra priorizar os kits
 -- personalizados na ordenação das listagens da loja.
 alter table products add column if not exists product_line text not null default 'revenda';
+
+-- 9) Leads — captura de lead pelo popup da home, com cupom de desconto de
+-- uso único. Tabela já criada em produção; aqui só documentamos a
+-- estrutura real pro repo.
+create table if not exists leads (
+  id uuid primary key default gen_random_uuid(),
+  name text not null,
+  whatsapp text not null,
+  email text,
+  coupon_code text not null unique, -- formato "BEMVINDA-XXXX"
+  discount_percent integer not null default 10,
+  used boolean not null default false,
+  used_at timestamptz,
+  expires_at timestamptz not null default (now() + interval '30 days'),
+  created_at timestamptz not null default now()
+);
+
+alter table leads enable row level security;
+
+-- Qualquer um (inclusive anônimo) pode criar um lead pelo popup do site.
+create policy "qualquer um pode criar um lead"
+  on leads for insert
+  to anon
+  with check (true);
+
+-- Sem policy de select/update/delete pra anon: validar um cupom e marcá-lo
+-- como usado só acontece server-side, com a service_role key (rotas
+-- /api/leads, /api/coupons/validate e /api/checkout). O painel admin lê
+-- via sessão autenticada normal (RLS não bloqueia auth.role() = 'authenticated'
+-- só porque não há policy — sem policy de select nenhuma leitura passa,
+-- então o painel também usa a service_role key pra listar leads).
+
+-- 10) Cupom aplicado num pedido, se houver — pra rastrear na tela de pedidos.
+alter table orders add column if not exists coupon_code text;
+alter table orders add column if not exists discount_cents integer not null default 0;

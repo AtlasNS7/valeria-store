@@ -8,7 +8,16 @@ type CheckoutBody = {
   customer_phone: string;
   customer_address: string;
   items: CartItem[];
+  coupon_code?: string;
 };
+
+async function releaseCoupon(
+  supabase: ReturnType<typeof createAdminClient>,
+  leadId: string | null,
+) {
+  if (!leadId) return;
+  await supabase.from("leads").update({ used: false, used_at: null }).eq("id", leadId);
+}
 
 export async function POST(request: Request) {
   try {
@@ -72,6 +81,49 @@ export async function POST(request: Request) {
       totalCents += product.price_cents * qty;
     }
 
+    // Cupom de desconto (gerado pelo popup de captura de lead na home).
+    // Nunca confia no desconto mandado pelo navegador — revalida tudo aqui
+    // e "reivindica" o cupom com um UPDATE condicional atômico, pra dois
+    // checkouts simultâneos não conseguirem usar o mesmo código.
+    let discountCents = 0;
+    let couponCode: string | null = null;
+    let leadId: string | null = null;
+
+    const rawCoupon = body.coupon_code?.trim().toUpperCase();
+    if (rawCoupon) {
+      const { data: lead } = await supabase
+        .from("leads")
+        .select("id, discount_percent")
+        .eq("coupon_code", rawCoupon)
+        .maybeSingle();
+
+      if (!lead) {
+        return NextResponse.json({ error: "Cupom inválido." }, { status: 400 });
+      }
+
+      const { data: claimed } = await supabase
+        .from("leads")
+        .update({ used: true, used_at: new Date().toISOString() })
+        .eq("id", lead.id)
+        .eq("used", false)
+        .gt("expires_at", new Date().toISOString())
+        .select("id")
+        .maybeSingle();
+
+      if (!claimed) {
+        return NextResponse.json(
+          { error: "Esse cupom já foi utilizado ou expirou." },
+          { status: 409 },
+        );
+      }
+
+      discountCents = Math.round((totalCents * lead.discount_percent) / 100);
+      couponCode = rawCoupon;
+      leadId = lead.id;
+    }
+
+    const finalTotalCents = Math.max(0, totalCents - discountCents);
+
     // Confere e baixa o estoque em uma única transação no banco (função
     // decrement_stock em supabase/schema.sql). Isso fecha a corrida em que
     // dois clientes compram o último frasco ao mesmo tempo: quem chegar
@@ -85,6 +137,7 @@ export async function POST(request: Request) {
     });
 
     if (stockError) {
+      await releaseCoupon(supabase, leadId);
       const message = stockError.message?.startsWith("Estoque insuficiente")
         ? stockError.message
         : "Um dos produtos ficou sem estoque suficiente. Atualiza o carrinho e tenta de novo.";
@@ -98,7 +151,9 @@ export async function POST(request: Request) {
         customer_phone: body.customer_phone.trim(),
         customer_address: body.customer_address.trim(),
         items: orderItems,
-        total_cents: totalCents,
+        total_cents: finalTotalCents,
+        coupon_code: couponCode,
+        discount_cents: discountCents,
         status: "pending",
       })
       .select()
@@ -106,8 +161,9 @@ export async function POST(request: Request) {
 
     if (orderError || !order) {
       // O estoque já tinha sido reservado para este pedido — como ele não
-      // foi criado, devolve as unidades pro catálogo.
+      // foi criado, devolve as unidades pro catálogo e libera o cupom.
       await supabase.rpc("restore_stock", { items: stockPayload });
+      await releaseCoupon(supabase, leadId);
       return NextResponse.json(
         { error: "Não consegui criar o pedido. Tenta de novo." },
         { status: 500 },
@@ -118,8 +174,10 @@ export async function POST(request: Request) {
       const { url } = await createInfinitePayLink({
         orderId: order.id,
         items: orderItems,
-        totalCents,
+        totalCents: finalTotalCents,
         customerName: body.customer_name.trim(),
+        couponCode,
+        discountCents,
       });
 
       await supabase

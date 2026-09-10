@@ -3,6 +3,7 @@ import { ProductFilters } from "@/components/ProductFilters";
 import { GirlfriendGiftBanner } from "@/components/GirlfriendGiftBanner";
 import { HeroCarousel } from "@/components/HeroCarousel";
 import { LastMinuteGiftBanner } from "@/components/LastMinuteGiftBanner";
+import { LeadCaptureModal } from "@/components/LeadCaptureModal";
 import { PersonalizationSection } from "@/components/PersonalizationSection";
 import { RealGiftsShowcase } from "@/components/RealGiftsShowcase";
 import { TestimonialsSection } from "@/components/TestimonialsSection";
@@ -44,6 +45,8 @@ export default async function HomePage() {
 
   return (
     <>
+      <LeadCaptureModal />
+
       <section className="relative overflow-hidden bg-[var(--night)] text-[var(--ink)]">
         <HeroCarousel />
         <div className="relative max-w-6xl mx-auto px-5 sm:px-8 pt-20 pb-24 sm:pt-28 sm:pb-32">

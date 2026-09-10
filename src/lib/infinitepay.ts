@@ -7,6 +7,8 @@ type CreateLinkParams = {
   items: OrderItem[];
   totalCents: number;
   customerName: string;
+  couponCode?: string | null;
+  discountCents?: number;
 };
 
 type CreateLinkResult = {
@@ -25,6 +27,8 @@ export async function createInfinitePayLink({
   items,
   totalCents,
   customerName,
+  couponCode,
+  discountCents = 0,
 }: CreateLinkParams): Promise<CreateLinkResult> {
   const handle = process.env.INFINITEPAY_HANDLE;
   if (!handle) {
@@ -34,22 +38,37 @@ export async function createInfinitePayLink({
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 
   const computedTotal = items.reduce((sum, i) => sum + i.price_cents * i.qty, 0);
-  if (computedTotal !== totalCents) {
+  if (computedTotal - discountCents !== totalCents) {
     // Proteção contra inconsistência entre o total calculado no checkout
-    // e a soma real dos itens — evita mandar um valor errado pra cobrança.
+    // e a soma real dos itens (já descontado o cupom, se houver) — evita
+    // mandar um valor errado pra cobrança.
     throw new Error(
-      `Total do pedido não bate com a soma dos itens (esperado ${totalCents}, calculado ${computedTotal}).`,
+      `Total do pedido não bate com a soma dos itens (esperado ${totalCents}, calculado ${computedTotal - discountCents}).`,
     );
+  }
+
+  // A API de Checkout Integrado não tem um campo de "desconto" separado —
+  // representamos o cupom como uma linha de valor negativo, o que faz a
+  // soma dos itens bater com o total já descontado. Confirme esse
+  // comportamento contra a conta real da InfinitePay antes de usar em
+  // produção (a doc pública não documenta preço negativo explicitamente).
+  const lineItems = items.map((item) => ({
+    name: item.name,
+    price: item.price_cents, // em centavos
+    quantity: item.qty,
+  }));
+  if (discountCents > 0) {
+    lineItems.push({
+      name: couponCode ? `Cupom ${couponCode}` : "Desconto",
+      price: -discountCents,
+      quantity: 1,
+    });
   }
 
   const body = {
     handle,
     order_nsu: orderId, // usamos o id do pedido como referência única
-    items: items.map((item) => ({
-      name: item.name,
-      price: item.price_cents, // em centavos
-      quantity: item.qty,
-    })),
+    items: lineItems,
     customer: {
       name: customerName,
     },

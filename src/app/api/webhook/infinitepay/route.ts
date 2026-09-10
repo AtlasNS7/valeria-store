@@ -54,7 +54,7 @@ export async function POST(request: Request) {
       })
       .eq("id", orderNsu)
       .eq("status", "pending")
-      .select("items")
+      .select("items, coupon_code")
       .single();
 
     if (cancelError && cancelError.code !== "PGRST116") {
@@ -71,6 +71,20 @@ export async function POST(request: Request) {
       });
       if (restoreError) {
         console.error("Erro ao repor estoque via webhook:", restoreError);
+      }
+
+      // Pagamento não foi pra frente — libera o cupom pra ele poder tentar
+      // de novo (o desconto tinha sido "reivindicado" no checkout).
+      const canceledCouponCode = (canceledOrder as { coupon_code?: string | null })
+        .coupon_code;
+      if (canceledCouponCode) {
+        const { error: couponError } = await supabase
+          .from("leads")
+          .update({ used: false, used_at: null })
+          .eq("coupon_code", canceledCouponCode);
+        if (couponError) {
+          console.error("Erro ao liberar cupom via webhook:", couponError);
+        }
       }
     }
 
