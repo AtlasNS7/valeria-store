@@ -3,7 +3,12 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { OCCASION_OPTIONS, type Product } from "@/lib/types";
+import { OCCASION_OPTIONS, type Product, type ProductLine } from "@/lib/types";
+
+const PRODUCT_LINE_LABELS: Record<ProductLine, string> = {
+  kit_personalizado: "Kit personalizado (feito pela Valéria)",
+  revenda: "Revenda",
+};
 
 function slugify(text: string) {
   return text
@@ -24,6 +29,9 @@ export function ProductForm({ product }: { product?: Product }) {
     product ? (product.price_cents / 100).toFixed(2) : "",
   );
   const [category, setCategory] = useState(product?.category ?? "perfumes");
+  const [productLine, setProductLine] = useState<ProductLine>(
+    product?.product_line ?? "kit_personalizado",
+  );
   const [occasions, setOccasions] = useState<string[]>(product?.occasions ?? []);
   const [stock, setStock] = useState(String(product?.stock ?? 1));
   const [imageUrl, setImageUrl] = useState(product?.image_url ?? "");
@@ -73,6 +81,7 @@ export function ProductForm({ product }: { product?: Product }) {
       description: description.trim(),
       price_cents: priceCents,
       category: category.trim() || "geral",
+      product_line: productLine,
       occasions,
       stock: Math.max(0, parseInt(stock, 10) || 0),
       image_url: imageUrl || null,
@@ -140,19 +149,36 @@ export function ProductForm({ product }: { product?: Product }) {
         </div>
       </div>
 
-      <div className="flex flex-col gap-1">
-        <label className="text-sm font-semibold" htmlFor="category">Categoria</label>
-        <select
-          id="category"
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
-          className="border border-[var(--line)] rounded-lg px-3 py-2 bg-[var(--paper)]"
-        >
-          <option value="perfumes">Perfumes</option>
-          <option value="presentes">Presentes</option>
-          <option value="kits">Kits</option>
-          <option value="geral">Geral</option>
-        </select>
+      <div className="grid grid-cols-2 gap-4">
+        <div className="flex flex-col gap-1">
+          <label className="text-sm font-semibold" htmlFor="category">Categoria</label>
+          <select
+            id="category"
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            className="border border-[var(--line)] rounded-lg px-3 py-2 bg-[var(--paper)]"
+          >
+            <option value="perfumes">Perfumes</option>
+            <option value="presentes">Presentes</option>
+            <option value="kits">Kits</option>
+            <option value="geral">Geral</option>
+          </select>
+        </div>
+        <div className="flex flex-col gap-1">
+          <label className="text-sm font-semibold" htmlFor="product_line">Linha do produto</label>
+          <select
+            id="product_line"
+            value={productLine}
+            onChange={(e) => setProductLine(e.target.value as ProductLine)}
+            className="border border-[var(--line)] rounded-lg px-3 py-2 bg-[var(--paper)]"
+          >
+            {Object.entries(PRODUCT_LINE_LABELS).map(([value, label]) => (
+              <option key={value} value={value}>
+                {label}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
 
       <div className="flex flex-col gap-2">
