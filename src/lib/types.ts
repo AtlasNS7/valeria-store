@@ -16,22 +16,25 @@ export type Product = {
   updated_at: string;
 };
 
-// Prioridade das linhas de produto nas listagens: kits personalizados
-// sempre aparecem antes dos produtos de revenda. Dentro de cada grupo a
-// ordenação passada pra cá (created_at, nome, etc) é preservada.
-const PRODUCT_LINE_WEIGHT: Record<ProductLine, number> = {
-  kit_personalizado: 0,
-  revenda: 1,
-};
+// Categoria dos kits prontos de revenda (ex: "Kit Presente Dia das Mães
+// Floratta Red"), que aparecem antes do resto da revenda na listagem.
+const RESALE_GIFT_KIT_CATEGORY = "kit-presente";
 
-export function sortByProductLine<T extends { product_line?: string | null }>(
-  items: T[],
-): T[] {
-  return [...items].sort((a, b) => {
-    const weightA = PRODUCT_LINE_WEIGHT[a.product_line as ProductLine] ?? 1;
-    const weightB = PRODUCT_LINE_WEIGHT[b.product_line as ProductLine] ?? 1;
-    return weightA - weightB;
-  });
+// Prioridade das listagens de produto:
+// 1. product_line = kit_personalizado (produção própria/artesanal da Valéria)
+// 2. dentro de revenda: category = "kit-presente" (kits prontos de revenda)
+// 3. resto da revenda
+// Dentro de cada grupo, a ordenação passada pra cá (created_at, nome, etc)
+// é preservada — o sort é estável.
+function productRank(item: { product_line?: string | null; category?: string | null }): number {
+  if ((item.product_line as ProductLine) === "kit_personalizado") return 0;
+  return item.category === RESALE_GIFT_KIT_CATEGORY ? 1 : 2;
+}
+
+export function sortByProductLine<
+  T extends { product_line?: string | null; category?: string | null },
+>(items: T[]): T[] {
+  return [...items].sort((a, b) => productRank(a) - productRank(b));
 }
 
 // Lista fixa de ocasiões/públicos pra marcar produtos e filtrar na loja.
