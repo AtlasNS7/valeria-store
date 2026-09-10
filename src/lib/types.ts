@@ -47,6 +47,19 @@ export const OCCASION_OPTIONS = [
   "Amigo secreto",
 ] as const;
 
+// Banner promocional do topo da home, cadastrado pela Valéria em
+// /admin/banners (ex: "Semana da Beleza — até 50% off").
+export type Banner = {
+  id: string;
+  image_url: string;
+  title: string | null;
+  subtitle: string | null;
+  link_url: string | null;
+  active: boolean;
+  sort_order: number;
+  created_at: string;
+};
+
 export type Testimonial = {
   id: string;
   author_name: string;

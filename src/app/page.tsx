@@ -4,9 +4,10 @@ import { GirlfriendGiftBanner } from "@/components/GirlfriendGiftBanner";
 import { HeroCarousel } from "@/components/HeroCarousel";
 import { LastMinuteGiftBanner } from "@/components/LastMinuteGiftBanner";
 import { PersonalizationSection } from "@/components/PersonalizationSection";
+import { PromoBannerCarousel } from "@/components/PromoBannerCarousel";
 import { RealGiftsShowcase } from "@/components/RealGiftsShowcase";
 import { TestimonialsSection } from "@/components/TestimonialsSection";
-import { sortByProductLine, type Product, type Testimonial } from "@/lib/types";
+import { sortByProductLine, type Banner, type Product, type Testimonial } from "@/lib/types";
 
 const FEATURES = [
   {
@@ -25,7 +26,7 @@ const FEATURES = [
 
 export default async function HomePage() {
   const supabase = await createClient();
-  const [{ data: products }, { data: testimonials }] = await Promise.all([
+  const [{ data: products }, { data: testimonials }, { data: banners }] = await Promise.all([
     supabase
       .from("products")
       .select("*")
@@ -37,13 +38,21 @@ export default async function HomePage() {
       .eq("active", true)
       .order("created_at", { ascending: false })
       .limit(6),
+    supabase
+      .from("banners")
+      .select("*")
+      .eq("active", true)
+      .order("sort_order", { ascending: true }),
   ]);
 
   const items = sortByProductLine((products ?? []) as Product[]);
   const testimonialItems = (testimonials ?? []) as Testimonial[];
+  const bannerItems = (banners ?? []) as Banner[];
 
   return (
     <>
+      <PromoBannerCarousel banners={bannerItems} />
+
       <section className="relative overflow-hidden bg-[var(--night)] text-[var(--ink)]">
         <HeroCarousel />
         <div className="relative max-w-6xl mx-auto px-5 sm:px-8 pt-20 pb-24 sm:pt-28 sm:pb-32">

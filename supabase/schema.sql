@@ -160,3 +160,45 @@ create policy "admin gerencia depoimentos"
 -- dos produtos de revenda importados em lote. Usado pra priorizar os kits
 -- personalizados na ordenação das listagens da loja.
 alter table products add column if not exists product_line text not null default 'revenda';
+
+-- 9) Banners promocionais do topo da home — a Valéria cadastra pelo painel
+-- /admin/banners. Se houver mais de um ativo, a home mostra um carrossel
+-- simples que troca automaticamente; com um só, mostra estático.
+create table if not exists banners (
+  id uuid primary key default gen_random_uuid(),
+  image_url text not null,
+  title text,
+  subtitle text,
+  link_url text,
+  active boolean not null default true,
+  sort_order integer not null default 0,
+  created_at timestamptz not null default now()
+);
+
+alter table banners enable row level security;
+
+create policy "banners ativos são públicos"
+  on banners for select
+  using (active = true);
+
+create policy "admin gerencia banners"
+  on banners for all
+  using (auth.role() = 'authenticated')
+  with check (auth.role() = 'authenticated');
+
+-- Bucket de imagens dos banners (mesmo padrão do product-images acima).
+insert into storage.buckets (id, name, public)
+values ('banner-images', 'banner-images', true)
+on conflict (id) do nothing;
+
+create policy "imagens de banner são públicas para leitura"
+  on storage.objects for select
+  using (bucket_id = 'banner-images');
+
+create policy "admin autenticado pode subir imagens de banner"
+  on storage.objects for insert
+  with check (bucket_id = 'banner-images' and auth.role() = 'authenticated');
+
+create policy "admin autenticado pode apagar imagens de banner"
+  on storage.objects for delete
+  using (bucket_id = 'banner-images' and auth.role() = 'authenticated');
